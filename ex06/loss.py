@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..ex04.prediction.predict_
+from ..ex04.predictionpredict_
 
 
 def loss_elem_(y, y_hat):
