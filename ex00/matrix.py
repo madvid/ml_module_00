@@ -1,5 +1,5 @@
 from __future__ import annotations
-from copy import deepcopy
+from sys import stderr
 
 class Matrix():
     def __init__(self, *args):
@@ -59,110 +59,103 @@ class Matrix():
         new = Matrix(self.shape[::-1])
         for ii in range(self.shape[0]):
             for jj in range(self.shape[1]):
-                new[jj][ii] = self.data[ii][jj]
+                new.data[jj][ii] = self.data[ii][jj]
         return new
         
         
     def __add__(self, other):
         if not isinstance(other, Matrix):
-            print("Right member of the addition operator is not a Matrix instance.")
-            return
+            raise ArithmeticError("Right member of the addition operator is not a Matrix instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
         try:
-            if self.shape != other.shape:
-                print("Incompatible shape.")
-                return
             res = Matrix(self.shape)
             for ii in range(self.shape[0]):
                 for jj in range(self.shape[1]):
                     res.data[ii][jj] = self.data[ii][jj] + other.data[ii][jj]
             return res
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
       
 
     def __radd__(self, other):
         if not isinstance(other, Matrix):
-            print("Left member of the addition operator is not a Matrix instance.")
-            return
+            raise ArithmeticError("Left member of the addition operator is not a Matrix instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
         try:
-            if self.shape != other.shape:
-                print("Incompatible shape.")
-                return
             res = Matrix(self.shape)
             for ii in range(self.shape[0]):
                 for jj in range(self.shape[1]):
                     res.data[ii][jj] = other.data[ii][jj] + self.data[ii][jj]
             return res
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __sub__(self, other):
         if not isinstance(other, Matrix):
-            print("Right member of the subtraction operator is not a Matrix instance.")
-            return
+            raise ArithmeticError("Right member of the subtraction operator is not a Matrix instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
         try:
-            if self.shape != other.shape:
-                print("Incompatible shape.")
-                return
             res = Matrix(self.shape)
             for ii in range(self.shape[0]):
                 for jj in range(self.shape[1]):
                     res.data[ii][jj] = self.data[ii][jj] - other.data[ii][jj]
             return res
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __rsub__(self, other):
         if not isinstance(other, Matrix):
-            print("Left member of the substraction operator is not a Matrix instance.")
-            return
+            raise ArithmeticError("Left member of the substraction operator is not a Matrix instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
         try:
-            if self.shape != other.shape:
-                print("Incompatible shape.")
-                return
             res = Matrix(self.shape)
             for ii in range(self.shape[0]):
                 for jj in range(self.shape[1]):
                     res.data[ii][jj] = other.data[ii][jj] - self.data[ii][jj]
             return res
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __truediv__(self, other):
         if isinstance(other, Matrix):
-            print("Warning, you should not try to divide a Matrix by another Matrix.")
+            print("Warning: You should not try to divide a Matrix by another Matrix.", file = stderr)
             try:
                 if other.shape == (1,1):
                     res = Matrix(self.shape)
                     for ii in range(self.shape[0]):
                         for jj in range(self.shape[1]):
-                            res = self.data[ii][jj] / other[0][0]
+                            res.data[ii][jj] = self.data[ii][jj] / other.data[0][0]
                     return res      
             except:
-                print("Divisor issue: either Matrix is not of dimension (1x1) or prior corruption of the Matrix object has been made.")
+                raise ArithmeticError("Divisor issue: either Matrix is not of dimension (1x1)" \
+                    + " or prior corruption of the Matrix object has been made" \
+                        + " or you are trying to divide by Matrix([[0]]).")
         if not isinstance(other, (int, float)):
-            print("Right member of the division operator is not a scalar.")
-            return
+            raise ArithmeticError("Right member of the division operator is not a scalar.")
+        if isinstance(other, (int, float)) and other == 0:
+            raise ZeroDivisionError("This is a bad idea to divide by 0.")
         try:
             res = Matrix(self.shape)
             for ii in range(self.shape[0]):
                 for jj in range(self.shape[1]):
-                    res = self.data[ii][jj] / other[0][0]
+                    res.data[ii][jj] = self.data[ii][jj] / other
             return res
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __rtruediv__(self, other):
-        print("Warning, you should not try to divide a Matrix by another Matrix. You must know what you are doing.")
+        print("Warning: You should not try to divide a Matrix by another Matrix. You must know what you are doing.", file = stderr)
         try:
             if self.shape != (1,1):
-                print("Left member of the division operator is not a Matrix, int or float instance.")
-                return
-            
+                raise ArithmeticError("Divisor issue: either Matrix is not of dimension (1x1)")
             if isinstance(other, Matrix):
                 if self.shape == (1,1):
                     res = Matrix(other.shape)
@@ -170,26 +163,23 @@ class Matrix():
                         for jj in range(other.shape[1]):
                             res = other.data[ii][jj] / self.data[0][0]
                     return res
-            
             elif isinstance(other, (int, float)):
                 return Matrix([[other / self.data[0][0]]])
             else:
-                print("Error: Right member of the division is not a (1x1) dimensional Matrix instance.")
-                return
+                raise ArithmeticError("Error: Right member of the division is not a (1x1) dimensional Matrix instance.")
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __mul__(self, other):
         if not isinstance(other, (Matrix, int, float, Vector)):
-            print("Right member of the multiplication operator is not a Matrix instance.")
-            return
+            raise ArithmeticError("Right member of the multiplication operator is not a Matrix instance.")
         try:
             if isinstance(other, (int, float)):
                 res = Matrix(self.shape)
                 for ii in range(self.shape[0]):
                     for jj in range(self.shape[1]):
-                        res[ii][jj] = self.data[ii][jj] * other
+                        res.data[ii][jj] = self.data[ii][jj] * other
                 return res
             elif isinstance(other, Matrix):
                 if self.shape[1] == other.shape[0]:
@@ -197,33 +187,54 @@ class Matrix():
                     for ii in range(self.shape[0]):
                         for kk in range(other.shape[1]):
                             for jj in range(self.shape[1]):
-                                res[ii][kk] += self.data[ii][jj] * other.data[jj][kk]
+                                res.data[ii][kk] += self.data[ii][jj] * other.data[jj][kk]
                     return res
                 else:
-                    print("Mismatch dimension between Matrix instances.")
-                    return
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
             elif isinstance(other, Vector):
                 if self.shape[1] == other.shape[0]:
                     res = Vector(other.shape[0])
                     for ii in range(self.shape[0]):
                         for jj in range(self.shape[1]):
-                            res[ii][0] = self.data[ii][jj] * other[jj][0]
+                            res.data[ii][0] = self.data[ii][jj] * other[jj][0]
                     return res
                 else:
-                    print("Mismatch dimension between Matrix instances.")
-                    return
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __rmul__(self, other):
-        if not isinstance(other, Matrix):
-            print("Right member of the addition operator is not a Matrix instance.")
-            return
+        if not isinstance(other, (Matrix, int, float, Vector)):
+            raise ArithmeticError("Right member of the addition operator is not a Matrix instance.")
         try:
-            pass
+            if isinstance(other, (int, float)):
+                res = Matrix(self.shape)
+                for ii in range(self.shape[0]):
+                    for jj in range(self.shape[1]):
+                        res.data[ii][jj] = self.data[ii][jj] * other
+                return res
+            elif isinstance(other, Matrix):
+                if other.shape[1] == self.shape[0]:
+                    res = Matrix((other.shape[0], self.shape[1]))
+                    for ii in range(other.shape[0]):
+                        for kk in range(self.shape[1]):
+                            for jj in range(other.shape[1]):
+                                res.data[ii][kk] += other.data[ii][jj] * self.data[jj][kk]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
+            elif isinstance(other, Vector):
+                if other.shape[1] == self.shape[0]:
+                    res = Vector(self.shape[0])
+                    for ii in range(other.shape[0]):
+                        for jj in range(other.shape[1]):
+                            res[ii][0] = other.data[ii][jj] * self[jj][0]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
         except:
-            print("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __str__(self):
@@ -231,47 +242,216 @@ class Matrix():
 
 
     def __repr__(self):
-        radical = "Matrix(["
-        end = "])"
-        for line in self.data:
-            radical += str(line) + ' '
-        return radical[:-1] + end
+        try:
+            radical = "Matrix(["
+            end = "])"
+            for line in self.data:
+                radical += str(line) + ' '
+            return radical[:-1] + end
+        except:
+            raise AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
     
     
 class Vector(Matrix):
     def __init__(self, *arg):
         super().__init__(self, *arg)
-        
+        if not all([l != 1 for l in self.shape]):
+            raise ValueError("Data should have a dimension with size 1: shape == (n, 1) or (1, m).")
     
     def dot(self, v:Vector):
-        pass
-    
-    def __add__(self, other):
-        pass
+        if not isinstance(v, Vector):
+            raise TypeError("dot product can be applied only between Vector objects.")
+        if (self.shape != v.shape) or (self.shape[1] != 1):
+            raise TypeError("Vectors should be of same dimension and for column vectors.")
+        res = Vector(self.shape)
+        try:
+            for ii in range(self.shape[0]):
+                res[ii] = self.data[ii] * v.data[ii]
+            return res
+        except:
+            raise AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
         
+    def __add__(self, other):
+        if not isinstance(other, Vector):
+            raise ArithmeticError("Right member of the addition operator is not a Vector instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
+        try:
+            res = Vector(self.shape)
+            for ii in range(self.shape[0]):
+                for jj in range(self.shape[1]):
+                    res.data[ii][jj] = self.data[ii][jj] + other.data[ii][jj]
+            return res
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+      
+
     def __radd__(self, other):
-        pass
+        if not isinstance(other, Vector):
+            raise ArithmeticError("Left member of the addition operator is not a Vector instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
+        try:
+            res = Vector(self.shape)
+            for ii in range(self.shape[0]):
+                for jj in range(self.shape[1]):
+                    res.data[ii][jj] = other.data[ii][jj] + self.data[ii][jj]
+            return res
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
     
     def __sub__(self, other):
-        pass
-        
+        if not isinstance(other, Vector):
+            raise ArithmeticError("Right member of the subtraction operator is not a Vector instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
+        try:
+            res = Vector(self.shape)
+            for ii in range(self.shape[0]):
+                for jj in range(self.shape[1]):
+                    res.data[ii][jj] = self.data[ii][jj] - other.data[ii][jj]
+            return res
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+
+
     def __rsub__(self, other):
-        pass
+        if not isinstance(other, Vector):
+            raise ArithmeticError("Left member of the substraction operator is not a Vector instance.")
+        if self.shape != other.shape:
+            raise ArithmeticError("Incompatible shape.")
+        try:
+            res = Vector(self.shape)
+            for ii in range(self.shape[0]):
+                for jj in range(self.shape[1]):
+                    res.data[ii][jj] = other.data[ii][jj] - self.data[ii][jj]
+            return res
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+
     
     def __truediv__(self, other):
-        pass
-        
+        if isinstance(other, Vector):
+            print("Warning: You should not try to divide a Vector by another Vector.", file = stderr)
+            try:
+                if other.shape == (1,1):
+                    res = Vector(self.shape)
+                    for ii in range(self.shape[0]):
+                        for jj in range(self.shape[1]):
+                            res.data[ii][jj] = self.data[ii][jj] / other.data[0][0]
+                    return res      
+            except:
+                raise ArithmeticError("Divisor issue: either Vector is not of dimension (1x1)" \
+                    + " or prior corruption of the Vector object has been made" \
+                        + " or you are trying to divide by Vector([[0]]).")
+        if not isinstance(other, (int, float)):
+            raise ArithmeticError("Right member of the division operator is not a scalar.")
+        if isinstance(other, (int, float)) and other == 0:
+            raise ZeroDivisionError("This is a bad idea to divide by 0.")
+        try:
+            res = Vector(self.shape)
+            for ii in range(self.shape[0]):
+                for jj in range(self.shape[1]):
+                    res.data[ii][jj] = self.data[ii][jj] / other
+            return res
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+
+
     def __rtruediv__(self, other):
-        pass
-    
+        print("You should not try to divide a Vector by another Matrix. You must know what you are doing.", file = stderr)
+        try:
+            if self.shape != (1,1):
+                raise ArithmeticError("Left member of the division operator is not a Vector, int or float instance.")
+            if isinstance(other, Vector):
+                if self.shape == (1,1):
+                    res = Vector(other.shape)
+                    for ii in range(other.shape[0]):
+                        for jj in range(other.shape[1]):
+                            res = other.data[ii][jj] / self.data[0][0]
+                    return res
+            
+            elif isinstance(other, (int, float)):
+                return Vector([[other / self.data[0][0]]])
+            else:
+                raise ArithmeticError("Error: Right member of the division is not a (1x1) dimensional Vector instance.")
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+
+
     def __mul__(self, other):
-        pass
-        
+        if not isinstance(other, (Matrix, int, float, Vector)):
+            raise ArithmeticError("Right member of the multiplication operator is not a Matrix, int, float or Vetor instance.")
+        try:
+            if isinstance(other, (int, float)):
+                res = Vector(self.shape)
+                for ii in range(self.shape[0]):
+                    for jj in range(self.shape[1]):
+                        res.data[ii][jj] = self.data[ii][jj] * other
+                return res
+            elif isinstance(other, Vector):
+                if self.shape[1] == other.shape[0]:
+                    res = Vector((self.shape[0], other.shape[1]))
+                    for ii in range(self.shape[0]):
+                        for kk in range(other.shape[1]):
+                            for jj in range(self.shape[1]):
+                                res.data[ii][kk] += self.data[ii][jj] * other.data[jj][kk]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Vector instances.")
+            elif isinstance(other, Vector):
+                if self.shape[1] == other.shape[0]:
+                    res = Vector(other.shape[0])
+                    for ii in range(self.shape[0]):
+                        for jj in range(self.shape[1]):
+                            res.data[ii][0] = self.data[ii][jj] * other[jj][0]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+
+
     def __rmul__(self, other):
-        pass
-    
+        if not isinstance(other, (Matrix, int, float, Vector)):
+            raise ArithmeticError("Right member of the addition operator is not a Matrix, int, float or Vector instance.")
+        try:
+            if isinstance(other, (int, float)):
+                res = Vector(self.shape)
+                for ii in range(self.shape[0]):
+                    for jj in range(self.shape[1]):
+                        res.data[ii][jj] = self.data[ii][jj] * other
+                return res
+            elif isinstance(other, Vector):
+                if other.shape[1] == self.shape[0]:
+                    res = Vector((other.shape[0], self.shape[1]))
+                    for ii in range(other.shape[0]):
+                        for kk in range(self.shape[1]):
+                            for jj in range(other.shape[1]):
+                                res.data[ii][kk] += other.data[ii][jj] * self.data[jj][kk]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Vector instances.")
+            elif isinstance(other, Vector):
+                if other.shape[1] == self.shape[0]:
+                    res = Vector(self.shape[0])
+                    for ii in range(other.shape[0]):
+                        for jj in range(other.shape[1]):
+                            res[ii][0] = other.data[ii][jj] * self[jj][0]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Vector instances.")
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Vector instance prior to the operation.")
+
+
     def __str__(self):
-        pass
-    
-    def __repr__():
-        pass
+        return self.__repr__()
+
+
+    def __repr__(self):
+        radical = "Vector(["
+        end = "])"
+        for line in self.data:
+            radical += str(line) + ' '
+        return radical[:-1] + end

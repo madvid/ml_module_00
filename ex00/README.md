@@ -1,0 +1,1 @@
+Il faut encore tester la classe vecteur. Pour l'instant, j'ai juste copié-collé les méthodes arithmétiques de la classe Matrix dans Vector et un petit peu modifié (uniquement modifications liées à l'instanciation Matrix-> Vector)
