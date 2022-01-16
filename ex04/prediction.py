@@ -16,11 +16,13 @@ def predict_(x, theta):
     try:
         if not isinstance(x, np.ndarray):
             return None
-
-        if any([n == 0 for n in x.shape]) or x.shape[1] != 1:
+    
+        if x.ndim == 1:
+            x = x.reshape(-1,1)
+        if any([n == 0 for n in x.shape]):
             return None
 
-        if theta.shape != (2, 1):
+        if theta.shape != (x.shape[1] + 1, 1):
             return None
 
         xp = np.hstack((np.ones((x.shape[0], 1)), x))
