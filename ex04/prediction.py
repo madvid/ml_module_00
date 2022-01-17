@@ -31,7 +31,3 @@ def predict_(x, theta):
         return ypred
     except:
         return None
-
-
-if __name__ == "__main__":
-    pass

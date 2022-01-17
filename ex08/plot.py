@@ -2,10 +2,11 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-plt.ion()
 
-sys.path.insert(1, os.path.realpath("../ex04"))
+path = os.path.join(os.path.dirname(__file__), '..', 'ex04')
+sys.path.insert(1, path)
 from prediction import predict_
+
 
 def plot_with_loss(x, y, theta):
     """Plot the data and prediction line from three non-empty numpy.ndarray.
@@ -18,34 +19,18 @@ def plot_with_loss(x, y, theta):
     Raises:
         This function should not raise any Exception.
     """
+    try:
+        _, axe = plt.subplots(1, 1, figsize = (15,8))
+        axe.scatter(x, y, c="royalblue")
+        ypred = predict_(x, theta)
+        axe.plot(x, ypred, '-', c='darkorange')
 
-    fig, axe = plt.subplots(1, 1, figsize = (15,8))
-    axe.scatter(x, y, c="blue")
-    ypred = predict_(x, theta)
-    axe.plot(x, ypred, '--', c='orange')
-    
-    for ii in range(x.shape[0]):
-        axe.plot([x[ii], y[ii]], [x[ii], ypred[ii]], 'r--')
-    plt.show()
+        # Generator for the residual segments
+        g_dist = ([np.array([xi, xi]), np.array([yi, ypredi])] for xi, yi, ypredi in zip(x, y, ypred))
 
-if __name__ == "__main__":
-    x = np.arange(1,6)
-    y = np.array([11.52434424, 10.62589482, 13.14755699, 18.60682298, 14.14329568])
-    #Example 1:
-    theta1= np.array([[18],[-1]])
-    plot_with_loss(x, y, theta1)
-    # Output:
-
-    #Example 2:
-    theta2 = np.array([[14], [0]])
-    plot_with_loss(x, y, theta2)
-    # Output:
-
-    #Example 3:
-    theta3 = np.array([[12], [0.8]])
-    plot_with_loss(x, y, theta3)
-    # Output:
-
-    plot_with_loss(np.array([0, 1]), np.array([0, 1]), np.array([[0], [1]]))
-    plot_with_loss(np.array([0, 1]), np.array([0, 1]), np.array([[1], [1]]))
-    plot_with_loss(np.array([0, 2]), np.array([0, 0]), np.array([[-1], [1]]))
+        for residual_i in g_dist:
+            axe.plot(residual_i[0], residual_i[1], '--', c='red')
+        plt.show()
+    except:
+        print("Please check the dimension of the different arguments.", file=sys.stderr)
+        return None

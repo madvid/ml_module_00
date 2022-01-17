@@ -16,16 +16,3 @@ def loss_(y, y_hat):
     """
     loss = np.dot((y - y_hat).T, y - y_hat) / (2.0 * y.shape[0])
     return float(loss)
-
-
-if __name__ == "__main__":
-    X = np.array([[0],[ 15],[ -9],[ 7],[ 12],[ 3],[ -21]])
-    Y = np.array([[2],[ 14],[ -13],[ 5],[ 12],[ 4],[ -19]])
-    # Example 1:
-    print("Example 1:\n", loss_(X, Y))
-    # Output:
-    2.142857142857143
-    # Example 2:
-    print("Example 2:\n", loss_(X, X))
-    # Output:
-    0.0
