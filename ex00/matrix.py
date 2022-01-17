@@ -174,34 +174,34 @@ class Matrix():
     def __mul__(self, other):
         if not isinstance(other, (Matrix, int, float, Vector)):
             raise ArithmeticError("Right member of the multiplication operator is not a Matrix instance.")
-        #try:
-        if isinstance(other, (int, float)):
-            res = Matrix(self.shape)
-            for ii in range(self.shape[0]):
-                for jj in range(self.shape[1]):
-                    res.data[ii][jj] = self.data[ii][jj] * other
-            return res
-        elif isinstance(other, Matrix):
-            if self.shape[1] == other.shape[0]:
-                res = Matrix((self.shape[0], other.shape[1]))
-                for ii in range(self.shape[0]):
-                    for kk in range(other.shape[1]):
-                        for jj in range(self.shape[1]):
-                            res.data[ii][kk] += self.data[ii][jj] * other.data[jj][kk]
-                return res
-            else:
-                raise ArithmeticError("Mismatch dimension between Matrix instances.")
-        elif isinstance(other, Vector):
-            if self.shape[1] == other.shape[0]:
-                res = Vector(other.shape)
+        try:
+            if isinstance(other, (int, float)):
+                res = Matrix(self.shape)
                 for ii in range(self.shape[0]):
                     for jj in range(self.shape[1]):
-                        res.data[ii][0] = self.data[ii][jj] * other[jj][0]
+                        res.data[ii][jj] = self.data[ii][jj] * other
                 return res
-            else:
-                raise ArithmeticError("Mismatch dimension between Matrix instances.")
-        #except:
-        #    raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
+            elif isinstance(other, Matrix):
+                if self.shape[1] == other.shape[0]:
+                    res = Matrix((self.shape[0], other.shape[1]))
+                    for ii in range(self.shape[0]):
+                        for kk in range(other.shape[1]):
+                            for jj in range(self.shape[1]):
+                                res.data[ii][kk] += self.data[ii][jj] * other.data[jj][kk]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
+            elif isinstance(other, Vector):
+                if self.shape[1] == other.shape[0]:
+                    res = Vector(other.shape)
+                    for ii in range(self.shape[0]):
+                        for jj in range(self.shape[1]):
+                            res.data[ii][0] = self.data[ii][jj] * other[jj][0]
+                    return res
+                else:
+                    raise ArithmeticError("Mismatch dimension between Matrix instances.")
+        except:
+            raise  AttributeError("Something wrong happened, possible corruption of the Matrix instance prior to the operation.")
 
 
     def __rmul__(self, other):
@@ -443,7 +443,7 @@ class Vector(Matrix):
                     raise ArithmeticError("Mismatch dimension between Vector instances.")
             elif isinstance(other, Matrix):
                 if other.shape[1] == self.shape[0]:
-                    res = Vector(self.shape)
+                    res = Vector((other.shape[0], self.shape[1]))
                     for ii in range(other.shape[0]):
                         for jj in range(other.shape[1]):
                             res.data[ii][0] += other.data[ii][jj] * self.data[jj][0]

@@ -392,6 +392,255 @@ class TestMatrixMethods(TestCase):
         self.assertTrue(isinstance(m1.T(), matrix.Matrix)) \
             and self.assertEqual(expected_val, m1.T().data) \
                 and self.assertEqual(expected_shape, m1.T().shape)
+    
+    
+class TestVectorMethods(TestCase):
+    # Tests group 1
+    def test_basic_instance_list_1(self):
+        expected_val = [[0], [0]]
+        expected_shape = (2,1)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_list_2(self):
+        expected_val = [[1, 2]]
+        expected_shape = (1,2)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_list_3(self):
+        expected_val = [[21], [42], [63]]
+        expected_shape = (3,1)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_list_4(self):
+        expected_val = [[21, 42, 63]]
+        expected_shape = (1,3)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    # Tests group 2
+    def test_basic_instance_shape_1(self):
+        expected_val = [[0], [0]]
+        expected_shape = (2,1)
+        M = matrix.Vector((2,1))
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_shape_2(self):
+        expected_val = [[0], [0], [0]]
+        expected_shape = (3,1)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_shape_3(self):
+        expected_val = [[0, 0, 0]]
+        expected_shape = (1,3)
+        M = matrix.Vector(expected_val)
+        self.assertTrue(check_data_equality(expected_val, M.data) and check_shape(expected_shape, M.shape))
+
+    def test_basic_instance_shape_4(self):
+        expected_shape = (0,6)
+        with self.assertRaises(ValueError):
+            M = matrix.Vector(expected_shape)
+
+    def test_basic_instance_shape_5(self):
+        expected_shape = (-2,6)
+        with self.assertRaises(ValueError):
+            M = matrix.Vector(expected_shape)
+            
+    # Tests group 4
+    def test_addition_1(self):
+        # basic (2x2) with (2x2) addition matrix with shape instance method
+        v1 = matrix.Vector((2, 1))
+        v2 = matrix.Vector((2, 1))
+        v3 = v1 + v2
+        expected_val = [[0], [0]]
+        expected_shape = (2, 1)
+        self.assertTrue(isinstance(v3, matrix.Vector) \
+            and check_data_equality(expected_val, v3.data) \
+                and check_shape(expected_shape, v3.shape))
+        
+    def test_addition_2(self):
+        # basic (3x3) with (3x3) addition matrix with nested list instance method
+        v1 = matrix.Vector([[1], [2], [3]])
+        v2 = matrix.Vector([[1], [1], [1]])
+        v3 = v1 + v2
+        expected_val = [[2], [3], [4]]
+        expected_shape = (3, 1)
+        self.assertTrue(isinstance(v3, matrix.Vector) \
+            and check_data_equality(expected_val, v3.data) \
+                and check_shape(expected_shape, v3.shape))
+
+    def test_addition_3(self):
+        # basic (3x3) with (3x3) addition matrix with nested list instance method. The second matrix has all it component negative
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = matrix.Vector([[-1, -1, -1, -1]])
+        v3 = v1 + v2
+        expected_val = [[0, 1, 2, 9.5]]
+        expected_shape = (1, 4)
+        self.assertTrue(isinstance(v3, matrix.Matrix)) \
+            and self.assertAlmostEqual(expected_val, v3.data) \
+                and self.assertEqual(expected_shape, v3.shape)
+
+
+    # Tests group 5
+    def test_error_addition_1(self):
+        # Addition between a (2x4) and a (2x2) Matrix
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = matrix.Vector([[-1, -1]])
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+        
+    def test_error_addition_2(self):
+        # Addition beteen a Matrix and a nested list of the same shape
+        v1 = matrix.Vector([[1], [2], [3], [10.5]])
+        v2 = [[0], [0], [0], [0]]
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+
+    def test_error_addition_3(self):
+        # Addition between (3x3) with tuple
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = 3246
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+
+
+    # Tests group 6
+    def test_substraction_1(self):
+        # basic (2x2) with (2x2) substraction matrix with shape instance method
+        v1 = matrix.Vector((2, 1))
+        v2 = matrix.Vector((2, 1))
+        v3 = v1 - v2
+        expected_val = [[0], [0]]
+        expected_shape = (2, 1)
+        self.assertTrue(isinstance(v3, matrix.Vector) \
+            and check_data_equality(expected_val, v3.data) \
+                and check_shape(expected_shape, v3.shape))
+        
+    def test_substraction_2(self):
+        # basic (3x3) with (3x3) substraction matrix with nested list instance method
+        v1 = matrix.Vector([[4, 5, 6]])
+        v2 = matrix.Vector([[2, 3, 2]])
+        v3 = v1 - v2
+        expected_val = [[2, 2, 4]]
+        expected_shape = (1, 3)
+        self.assertTrue(isinstance(v3, matrix.Vector) \
+            and check_data_equality(expected_val, v3.data) \
+                and check_shape(expected_shape, v3.shape))
+
+    def test_substraction_3(self):
+        # basic (3x3) with (3x3) substraction matrix with nested list instance method. The second matrix has all it component negative
+        v1 = matrix.Vector([[1], [2], [3], [9.5]])
+        v2 = matrix.Vector([[-1], [-1], [-1], [10]])
+        v3 = v1 - v2
+        expected_val = [[2], [3], [4], [-0.5]]
+        expected_shape = (4, 1)
+        self.assertTrue(isinstance(v3, matrix.Vector) \
+            and check_data_equality(expected_val, v3.data) \
+                and check_shape(expected_shape, v3.shape))
+
+
+    # Tests group 7
+    def test_error_substraction_1(self):
+        # Substraction between a (2x4) and a (2x2) Matrix
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = matrix.Vector([[-1, -1]])
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+        
+    def test_error_substraction_2(self):
+        # Substraction beteen a Matrix and a nested list of the same shape
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = [[0, 0, 0, 0], [0, 0, 0, 0]]
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+
+    def test_error_substraction_3(self):
+        # Substraction between (3x3) with tuple
+        v1 = matrix.Vector([[1, 2, 3, 10.5]])
+        v2 = 3246
+        with self.assertRaises(ArithmeticError):
+            v1 + v2
+    
+    # Tests group 8
+    def test_multiplication_1(self):
+        # basic (2x2) with (2x2) multiplication matrices
+        m1 = matrix.Vector([[2], [4]])
+        s2 = 5
+        expected_val = [[10], [20]]
+        expected_shape = (2, 1)
+        self.assertTrue(isinstance(m1 * s2, matrix.Vector)) \
+            and self.assertEqual(expected_val, (m1 * s2).data) \
+                and self.assertEqual(expected_shape, (m1 * s2).shape)
+        
+    def test_multiplication_2(self):
+        # basic (4x4) with (4x4) multiplication matrices
+        s1 = 5
+        m2 = matrix.Vector([[2, 4, 6]])
+        expected_val = [[10, 20, 30]]
+        expected_shape = (1, 3)
+        self.assertTrue(isinstance((s1 * m2), matrix.Vector)) \
+            and self.assertEqual(expected_val, (s1 * m2).data) \
+                and self.assertEqual(expected_shape, (s1 * m2).shape)
+
+    def test_multiplication_vector_matrix(self):
+        # basic (3x2) with (2x3) multiplication matrices
+        m1 = matrix.Vector([[1, 2]])
+        m2 = matrix.Matrix([[3, -7, 2], [0, -3, 5]])
+        expected_val = [[3, -10, 12]]
+        expected_shape = (1, 3)
+        self.assertTrue(isinstance(m1 * m2, matrix.Vector)) \
+            and self.assertEqual(expected_val, (m1 * m2).data) \
+                and self.assertEqual(expected_shape, (m1 * m2).shape)
+
+    def test_multiplication_vector_matrix_2(self):
+        # basic (3x3) multiplication matrix with a float
+        m1 = matrix.Matrix([[1, 2, 3], [4, 5, 6]])
+        v2 = matrix.Vector([[1], [2], [3]])
+        expected_val = [[15], [32]]
+        expected_shape = (2, 1)
+        self.assertTrue(isinstance(m1 * v2, matrix.Vector)) \
+            and self.assertEqual(expected_val, (m1 * v2).data) \
+                and self.assertEqual(expected_shape, (m1 * v2).shape)
+
+
+    # Tests group 9
+    def test_error_multiplication_1(self):
+        # multiplication between a (2x4) Matrix and a (2x2) Matrix
+        m1 = matrix.Vector([[1, 2, 3, 10.5]])
+        m2 = matrix.Vector([[-1, -1]])
+        with self.assertRaises(AttributeError):
+            m1 * m2
+        
+    def test_error_multiplication_2(self):
+        # multiplication between a (1x3) Matrix and a (2x4) Matrix
+        m1 = matrix.Vector([[-1], [-1], [-1]])
+        m2 = matrix.Vector([[1], [2], [3], [10.5]])
+        with self.assertRaises(AttributeError):
+            m1 * m2
+
+    def test_error_multiplication_3(self):
+        # multiplication between a (2x4) Matrix and a (2x1) Matrix
+        m1 = matrix.Vector([[1, 2, 3, 10.5]])
+        m2 = [[1]]
+        with self.assertRaises(ArithmeticError):
+            m1 * m2
+            
+    def test_error_multiplication_4(self):
+        # multiplication between a (2x4) Matrix and a (2x1) Matrix
+        m1 = matrix.Vector([[1, 2, 3, 10.5]])
+        m2 = "Matrix"
+        with self.assertRaises(ArithmeticError):
+            m1 * m2
+            
+    def test_error_multiplication_5(self):
+        # multiplication between a (2x4) Matrix and a (2x1) Matrix
+        m1 = matrix.Vector([[1], [2], [3], [10.5]])
+        m2 = (2,5)
+        with self.assertRaises(ArithmeticError):
+            m1 * m2
 
 # ---------------------------------------------------------- #
 # ________________________   MAIN   ________________________ #
